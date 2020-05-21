@@ -1,0 +1,50 @@
+---
+# tasks file for super-nginx
+    - name: ensure nginx is installed
+      apt: name=nginx state=present
+
+    - name: ensure curl is installed
+      apt: name=curl state=present
+      
+    - name: ensure git is installed
+      apt: name=git state=present
+      
+# Tareas del git    
+    - name: Create a directory on root
+      become: yes
+      become_user: root
+      file:
+        path: "{{ local_home_dir }}/proyectos_git"
+        owner: "{{ local_user }}"
+        group: "{{ local_user }}"
+        state: directory
+    - name: Clone the Notable github repo locally
+      become_user: "{{ local_user }}"
+      git:
+        repo: 'https://github.com/notable/notable.git'
+        dest: "{{ local_home_dir }}/proyectos_git"
+        clone: yes
+        recursive: yes
+        force: yes
+        version: master
+      become: yes
+      #become_user: root
+
+# Config NGINX
+
+    - name: tarea posinstalacion 1     # copiar la configuracion de nginx
+      template:
+       src: templates/minginx.conf
+       dest: /etc/nginx/conf.d/minginx.conf
+       mode: '0400'
+      notify: nginx_reconfigurado
+      
+    - name: start nginx
+      service:
+          name: nginx
+          state: restarted #started
+
+
+    - name: curl to ubuntu01 nginx
+      command: curl http://172.17.0.2:81 warn=False
+      

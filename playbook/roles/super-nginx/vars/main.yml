@@ -1,0 +1,9 @@
+---
+# vars file for super-nginx
+local_user: root
+local_home_dir: /root
+ruta_web: /www
+puerto_srv_web: 80
+nginx_server: ole_mi_nginx
+nginx_port: 81 
+nginx_web_path: /web

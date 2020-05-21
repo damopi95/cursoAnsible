@@ -1,0 +1,7 @@
+- hosts: 172.17.0.2
+
+  remote_user: root
+  gather_facts: False
+  
+  roles:
+    - test
