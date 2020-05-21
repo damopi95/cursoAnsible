@@ -1,0 +1,22 @@
+---
+-   name: Actualizar Ubuntus
+    hosts: ubuntus
+    remote_user: root
+    tasks:
+        
+        - name: Run the equivalent of "apt-get update" as a separate step
+          apt:
+            update_cache: yes
+        
+        - name: Upgrade all packages to the latest version
+          apt:
+            name: "*"
+            state: latest
+            force_apt_get: True
+        
+        - name: Create users
+          user:
+            name: Bartolo
+            password: 'bartolin01'
+
+

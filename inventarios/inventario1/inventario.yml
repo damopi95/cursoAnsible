@@ -1,0 +1,7 @@
+all:
+  hosts:
+  children:
+    ubuntus:
+        hosts:
+            172.17.0.3:
+            172.17.0.2:

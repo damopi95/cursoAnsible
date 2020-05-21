@@ -1,0 +1,170 @@
+# El super playbook
+--- # Creamos nuevo play
+# Contra quien opero
+- hosts: all
+
+    # Opciones de conexion
+  remote_user: root
+  order: inventory # Que se ejecuten en el orden del inventario, puede ser reverse_inventory | sort | shuffle
+  # Por defecto lo hace de forma secuancial de 5 en 5 
+    
+  # Variables
+  vars:
+        variable1: Hola amigo!!
+        variable2: 22
+        variable3: 
+            subvalor1: 1
+            subvalor2: 2
+  
+  
+    
+  # Definicion de tareas
+  tasks:
+        
+        
+        - name: Mi primera tarea
+          debug:
+               # Se declaran entre comillas, uso de JINJA    
+               msg: "{{ variable1 }} voy a comenzar una tarea"
+               
+        - name: Mi segunda tarea
+          debug:
+               # Se declaran entre comillas, uso de JINJA    
+               #msg: "{{ variable1 }} voy a comenzar una tarea {{ numerotarea }}"
+               
+        - name: Mi tercera tarea
+          debug:
+               # Se declaran entre comillas, uso de JINJA    
+               msg: "{{ variable1 }} voy a comenzar una tarea {{ numerotarea }}"
+          # Puedo definir variables a nivel de tarea
+          vars:
+               numerotarea: 3
+               
+        - name: Mi cuarta tarea
+          debug:
+               # Se declaran entre comillas, uso de JINJA    
+               msg: >
+                   "Valores dell diccionario {{ variable3.subvalor1 }}"
+                   "Valores dell diccionario {{ variable3.subvalor2 }}"
+
+        - name: Mi Quinta tarea (facts)
+          debug:
+               # Se declaran entre comillas, uso de JINJA    
+               #msg: "{{ ansible_facts }}"
+               #var: ansible_facts
+
+        # Mi primera tarea condicional
+        - name: Mi tarea condicional
+          debug:
+                msg: "He entrado!!!"
+          when: # Esto es un AND encubierto
+          - ansible_facts.distribution == 'Ubuntu'
+          - variable2 == 22
+
+        # Una tarea normalita
+        - name: Mi tarea normalita 1
+          debug:
+                msg: "me ejecuto normalmente"
+          changed_when: True
+          notify: tarea opcional 1
+    
+        # Una tarea normalita
+        - name: Mi tarea normalita 2
+          debug:
+                msg: "me ejecuto normalmente"
+          changed_when: True
+          notify: mievento
+    
+        # Una tarea que explota
+        - name: Mi tarea explosiva
+          shell:
+                cmd: umane
+          ignore_errors: True
+          register: explosiva
+                      
+        # Una tarea que explota
+        - name: Otra tarea
+          debug:
+                var: explosiva
+    
+          # Una tarea que explota
+        - name: Otra tarea
+          debug:
+                msg: Me ejecuto despues de la exxplosiva
+          when:
+            explosiva.rc > 0
+
+          # Una tarea que explota
+        - name: Otra tarea stdout
+          debug:
+                msg: "{{ explosiva.stdout }}"
+          when:
+            explosiva.rc == 0
+
+        # Una tarea que explota
+        - name: Mi tarea explosiva 2
+          shell:
+                cmd: umane
+          ignore_errors: True
+          failed_when: explosiva.rc > 200
+          register: explosiva
+                      
+  
+        # Una tarea que explota
+        - name: Una tarea que comprueba un texto
+          debug:
+                msg: La salida de error de la tarea explosiva contiene 'not found'
+          when: "'found' not in explosiva.stderr" 
+            
+        # Una tarea de bule
+        - name: Mi primer bucle
+          debug:
+                msg: "Ahora voy a hacer algo con un puerto {{ item }}"
+          loop: "{{ puertos }}"
+          vars:
+            puertos:
+                - 80
+                - 81
+                - 83
+  
+        - name: Encontrar CPU
+          debug:
+                msg: "Veamos las CPUs: {{ item }}"
+          loop: "{{ ansible_facts.processor}}"
+
+        # Para sacar solo el modelo de CPU
+        - name: Encontrar CPU Con ITEM.INDEX
+          debug:
+                msg: "Veamos los modelos de las CPUs: {{ item }}"
+          loop: "{{ ansible_facts.processor}}"
+          loop_control:
+             index_var: cpus
+          when: (cpus +1) % 3 == 0
+  
+  
+  handlers: 
+        # Una tarea opcional
+        - name: tarea opcional 1
+          debug:
+                msg: "me ejecuto opcionalmente"
+          listen: mievento
+
+
+        # Una tarea opcional
+        - name: tarea opcional 2
+          debug:
+                msg: "me ejecuto opcionalmente"
+          listen: mievento
+
+          
+# Variables dentro de loops
+# ansible_loop.allitems La lista de todos los elementos en el bucle
+# ansible_loop.index La iteración actual del bucle. (comenzando en 1)
+# ansible_loop.index0 La iteración actual del bucle. (comenzando en 0)
+# ansible_loop.revindex El número de iteraciones hasta acabar el bucle (comenzando en 1)
+# ansible_loop.revindex0 El número de iteraciones hasta acabar el bucle (comenzando en 0)
+# ansible_loop.first Verdadero si es la primera iteración
+# ansible_loop.last Verdadero si es la última iteración
+# ansible_loop.length El número de elementos en el bucle
+# ansible_loop.previtem El elemento de la iteración anterior del bucle. Indefinido durante la primera iteración.
+# ansible_loop.nextitem El elemento de la siguiente iteración del bucle. Indefinido durante la última iteración. 
