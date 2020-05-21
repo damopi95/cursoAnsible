@@ -24,6 +24,6 @@
     - name:
       assert:
         that:
-            - "'fichero de la web' in capturado_curl.stdout"
+            - "'privado' in capturado_curl.stdout"
         msg: "Nginx no esta correctamente configurado"
         success_msg: "nginx esta correctamente configurado"
