@@ -1,0 +1,29 @@
+    #- name: curl to ubuntu01 nginx
+    #  command: curl http://172.17.0.2:81 warn=False
+    
+    # Comprobando NGINX
+    
+    - name: Curl del puerto
+      shell:
+       cmd: curl http://172.17.0.2:81
+      ignore_errors: True
+      register: capturado_curl 
+      
+    - name: comprobaciones
+      debug: 
+        var: capturado_curl
+      
+    - name: Comprobar que la configuracion se aplica
+      assert:
+        that:
+            - capturado_curl is succeeded
+        msg: "Nginx no esta ejecutandose"
+        success_msg: "Nginx se esta ejecutando"
+        
+    # Configuracion NGINX
+    - name:
+      assert:
+        that:
+            - "'fichero de la web' in capturado_curl.stdout"
+        msg: "Nginx no esta correctamente configurado"
+        success_msg: "nginx esta correctamente configurado"

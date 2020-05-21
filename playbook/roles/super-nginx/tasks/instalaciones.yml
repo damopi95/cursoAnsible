@@ -1,0 +1,8 @@
+    - name: ensure nginx is installed
+      apt: name=nginx state=present
+
+    - name: ensure curl is installed
+      apt: name=curl state=present
+      
+    - name: ensure git is installed
+      apt: name=git state=present
