@@ -168,3 +168,4 @@
 # ansible_loop.length El número de elementos en el bucle
 # ansible_loop.previtem El elemento de la iteración anterior del bucle. Indefinido durante la primera iteración.
 # ansible_loop.nextitem El elemento de la siguiente iteración del bucle. Indefinido durante la última iteración. 
+
